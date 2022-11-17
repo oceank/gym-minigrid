@@ -660,6 +660,15 @@ class MiniGridEnv(gym.Env):
 
         # Action enumeration for this environment
         self.actions = MiniGridEnv.Actions
+        self.action_names = {
+            MiniGridEnv.Actions.left: 'left',
+            MiniGridEnv.Actions.right: 'right',
+            MiniGridEnv.Actions.forward: 'forward',
+            MiniGridEnv.Actions.pickup: 'pickup',
+            MiniGridEnv.Actions.drop: 'drop',
+            MiniGridEnv.Actions.toggle: 'toggle',
+            MiniGridEnv.Actions.done: 'done'
+        }
 
         # Actions are discrete integer values
         self.action_space = spaces.Discrete(len(self.actions))
@@ -1298,3 +1307,6 @@ class MiniGridEnv(gym.Env):
         if self.window:
             self.window.close()
         return
+
+    def get_action_name(self, action):
+        return self.action_names[action]
