@@ -736,6 +736,10 @@ class MiniGridEnv(gym.Env):
         # Box opened, used by OpenBox instruction
         self.box_opened = None
 
+        # when an object is carried or dropped or when a box is opened (automatically removed),
+        # the grid changes
+        self.grid_changed = False
+
         # Step count since episode start
         self.step_count = 0
 
@@ -1114,6 +1118,11 @@ class MiniGridEnv(gym.Env):
         reward = 0
         done = False
 
+        # default grid_changed to False
+        # it indicates if the grid changes after performing the action
+        # it is used to decide if the valid set of low-level instructions should be updated
+        self.grid_changed = False
+
         # default box_opened to be None for each step
         # will assign the open box if the action is toggle and the toggle object is a box
         self.box_opened = None
@@ -1151,6 +1160,7 @@ class MiniGridEnv(gym.Env):
                     self.carrying = fwd_cell
                     self.carrying.cur_pos = np.array([-1, -1])
                     self.grid.set(*fwd_pos, None)
+                    self.grid_changed = True
 
         # Drop an object
         elif action == self.actions.drop:
@@ -1158,12 +1168,14 @@ class MiniGridEnv(gym.Env):
                 self.grid.set(*fwd_pos, self.carrying)
                 self.carrying.cur_pos = fwd_pos
                 self.carrying = None
+                self.grid_changed = True
 
         # Toggle/activate an object
         elif action == self.actions.toggle:
             if fwd_cell:
                 if fwd_cell.type == 'box':
                     self.box_opened = fwd_cell
+                    self.grid_changed = True
                 fwd_cell.toggle(self, fwd_pos)
 
         # Done action (not used by default)
