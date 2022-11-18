@@ -733,6 +733,9 @@ class MiniGridEnv(gym.Env):
         # Item picked up, being carried, initially nothing
         self.carrying = None
 
+        # Box opened, used by OpenBox instruction
+        self.box_opened = None
+
         # Step count since episode start
         self.step_count = 0
 
@@ -1111,6 +1114,10 @@ class MiniGridEnv(gym.Env):
         reward = 0
         done = False
 
+        # default box_opened to be None for each step
+        # will assign the open box if the action is toggle and the toggle object is a box
+        self.box_opened = None
+
         # Get the position in front of the agent
         fwd_pos = self.front_pos
 
@@ -1155,6 +1162,8 @@ class MiniGridEnv(gym.Env):
         # Toggle/activate an object
         elif action == self.actions.toggle:
             if fwd_cell:
+                if fwd_cell.type == 'box':
+                    self.box_opened = fwd_cell
                 fwd_cell.toggle(self, fwd_pos)
 
         # Done action (not used by default)
