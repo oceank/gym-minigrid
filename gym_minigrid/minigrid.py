@@ -724,6 +724,16 @@ class MiniGridEnv(gym.Env):
         self.agent_pos = None
         self.agent_dir = None
 
+        # Item picked up, being carried, initially nothing
+        self.carrying = None
+
+        # Box opened, used by OpenBox instruction
+        self.box_opened = None
+
+        # when an object is carried or dropped or when a box is opened (automatically removed),
+        # the grid changes
+        self.grid_changed = False
+
         # Generate a new random grid at the start of each episode
         # To keep the same grid for each episode, call env.seed() with
         # the same seed before calling env.reset()
@@ -736,16 +746,6 @@ class MiniGridEnv(gym.Env):
         # Check that the agent doesn't overlap with an object
         start_cell = self.grid.get(*self.agent_pos)
         assert start_cell is None or start_cell.can_overlap()
-
-        # Item picked up, being carried, initially nothing
-        self.carrying = None
-
-        # Box opened, used by OpenBox instruction
-        self.box_opened = None
-
-        # when an object is carried or dropped or when a box is opened (automatically removed),
-        # the grid changes
-        self.grid_changed = False
 
         # Step count since episode start
         self.step_count = 0
