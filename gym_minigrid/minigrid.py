@@ -434,6 +434,13 @@ class Grid:
 
         return grid
 
+    def get_nearby_cells(self, target_cell_pos):
+        nearby_cells = []
+        for direction in DIR_TO_VEC:
+            nearby_cell_pos = target_cell_pos + direction
+            nearby_cells.append(self.get(*nearby_cell_pos))
+        return nearby_cells
+
     @classmethod
     def render_tile(
         cls,
