@@ -211,7 +211,7 @@ class RoomGrid(MiniGridEnv):
 
         return self.place_in_room(i, j, obj)
 
-    def add_door(self, i, j, door_idx=None, color=None, locked=None):
+    def add_door(self, i, j, door_idx=None, color=None, locked=None, is_open=None):
         """
         Add a door to a room, connecting it to a neighbor
         """
@@ -234,8 +234,11 @@ class RoomGrid(MiniGridEnv):
 
         assert room.doors[door_idx] is None, "door already exists"
 
-        room.locked = locked
-        door = Door(color, is_locked=locked)
+        if is_open == None:
+            is_open = False
+
+        room.locked = (not is_open) and locked
+        door = Door(color, is_open=is_open, is_locked=locked)
 
         pos = room.door_pos[door_idx]
         self.grid.set(*pos, door)
