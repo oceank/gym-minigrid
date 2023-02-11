@@ -363,7 +363,7 @@ class RoomGrid(MiniGridEnv):
 
         return added_doors
 
-    def add_distractors(self, i=None, j=None, num_distractors=10, all_unique=True):
+    def add_distractors(self, i=None, j=None, num_distractors=10, all_unique=True, exclude_objs=None):
         """
         Add random objects that can potentially distract/confuse the agent.
         """
@@ -383,7 +383,12 @@ class RoomGrid(MiniGridEnv):
             type = self._rand_elem(['key', 'ball', 'box'])
             obj = (type, color)
 
+            reject_sampled_obj = False
             if all_unique and obj in objs:
+                reject_sampled_obj = True
+            if exclude_objs is not None and obj in exclude_objs:
+                reject_sampled_obj = True
+            if reject_sampled_obj:
                 continue
 
             # Add the object to a random room if no room specified
