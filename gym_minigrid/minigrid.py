@@ -88,6 +88,15 @@ class WorldObj:
         # Current position of the object
         self.cur_pos = None
 
+    # Notes For Object Avialability States
+    # onboard: init_pos and cur_pos are not None. When the grid is initialized, the two properties of visiable objects are set. 'onboard' means onboard and visiable.
+    # carried: init_pos is not None and cur_pos is array([-1, -1]). Non-door objects transits from onboard state to carried state by Pickup action and transits from carried state to onboard state by Drop action.
+    # removed: init_pos is not None and cur_pos is None. Currently only box transits from onboard state to removed state by Open action.
+    # hidden: init_pos and cur_pos are None. Non-door objects can transit from hidden state to onboard state by Open action.
+    def is_hidden(self):
+        """Is this object hidden inside a box?"""
+        return True if self.cur_pos is None else False
+
     def can_overlap(self):
         """Can the agent overlap with this?"""
         return False
@@ -323,7 +332,12 @@ class Box(WorldObj):
 
     def toggle(self, env, pos):
         # Replace the box by its contents
+        if self.contains:
+            # make the contained visiable and support self.is_hidden()
+            self.contains.init_pos = self.cur_pos
+            self.contains.cur_pos = self.cur_pos
         env.grid.set(*pos, self.contains)
+        self.cur_pos = None # the box is removed: init_pos not none but cur_pos is none
         return True
 
 class Grid:
